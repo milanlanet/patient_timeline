@@ -67,10 +67,10 @@
 							<?php foreach($category['templates'] as $template) : ?>
 							<div class="fl-user-template" data-id="<?php echo $template['id']; ?>">
 							<?php 
-							if(get_post_meta($template['id'],'saved_bb_temp_thumb',true)!="")
+							if(wp_get_attachment_url(get_post_thumbnail_id($template['id']))!="")
 							{
 								?>
-							<img width="200" height="47" src="<?php echo get_post_meta($template['id'],'saved_bb_temp_thumb',true); ?>" class="CToWUd">	
+							<img width="200" height="47" src="<?php echo wp_get_attachment_url(get_post_thumbnail_id($template['id'])); ?>" class="CToWUd">	
 								<?php
 							}
 							?>

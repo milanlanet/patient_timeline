@@ -655,7 +655,7 @@ content:attr(data-ph)
     </div>
     <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span><span class="sr-only">Previous</span></a>
     <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span><span class="sr-only">Next</span></a></div></div>'),
-array('name' => 'steps-to-creating-template',
+array('name' => 'steps-to-creating-a-page',
                 'title' => 'Steps to creating a page',
                 'show_in_timeline' => 0,
                 'row_pos'=>2,
@@ -1425,14 +1425,16 @@ function patient_page_shortcode() {
 															jQuery("#email_link_myModal").modal();
 															jQuery('#mycustomeditor_afds').val(email_link);
 															
-															tinyMCE.get('mycustomeditor_afds').setContent("<?php echo addslashes(get_user_meta($current_user->ID,'int_msg',true)); ?><br>"+email_link+''+"<br><?php echo addslashes(get_user_meta($current_user->ID,'timeline_email',true)); ?>");
-														});
+														//	tinyMCE.get('mycustomeditor_afds').setContent("<?php echo addslashes(get_user_meta($current_user->ID,'int_msg',true)); ?><br>"+email_link+''+"<br><?php echo addslashes(get_user_meta($current_user->ID,'timeline_email',true)); ?>");
+														  jQuery('#mycustomeditor_afds_ifr').contents().find('#tinymce').html("<?php echo addslashes(get_user_meta($current_user->ID,'int_msg',true)); ?><br>"+email_link+''+"<br><?php echo addslashes(get_user_meta($current_user->ID,'timeline_email',true)); ?>");
+                                                          
+                                                        });
 														jQuery('.for_email').click(function(e){
 																
 																	e.preventDefault();
 																	var mail_data = jQuery('.email_popup_form').serialize();
 																	
-																	var msg_body = tinyMCE.get('mycustomeditor_afds').getContent();
+																	var msg_body = jQuery('#mycustomeditor_afds_ifr').contents().find('#tinymce').html();
 																	msg_body = msg_body.trim();
 																	var tomail = jQuery('.to_email').val();
 																	var subject = jQuery('.subject').val();
@@ -1538,7 +1540,7 @@ function patient_page_shortcode() {
                                                                 init: function (event,data) {
 																	var selNodes = data.tree.getSelectedNodes();
 																	email_link	= jQuery.map(selNodes, function(node){
-																			 return  '<a href="'+encodeURI(node.data.url)+'">'+node.title+'</a><br>' ;
+																			 return  '<div><a href="'+encodeURI(node.data.url)+'"><div>'+node.title+'</div></a><br></div>' ;
 																			//return node.data.url+'<br>';
 																		  });
 																			jQuery("#tree_<?php echo $v->ID; ?>").has('ul').find('li').find('ul').has('li').find('ul').has('li').find('ul').addClass('timeline_in_ul');
@@ -1588,9 +1590,10 @@ function patient_page_shortcode() {
 																	
 																	 var selNodes = data.tree.getSelectedNodes();
 																	email_link	= jQuery.map(selNodes, function(node){
+                                                                        console.log('<a href="'+encodeURI(node.data.url)+'">'+node.title+'</a><br>');
 																			if(node.data.url!=undefined)
 																			{
-																			 return  '<a href="'+encodeURI(node.data.url)+'">'+node.title+'</a><br>' ;
+																			 return  '<div><a href="'+encodeURI(node.data.url)+'"><div>'+node.title+'</div></a><br></div>' ;
 																			}
 																			//return node.data.url+'<br>';
 																		  });
@@ -1744,7 +1747,16 @@ function patient_page_shortcode() {
                                                                                                         jQuery('.selected_temp_modal #temp_selected_title').val(res.title);
                                                                                                         jQuery('#edittemplatepost_ifr').contents().find("body").html('');
                                                                                                         jQuery('#edittemplatepost_ifr').contents().find("body").append(res.content);
-                                                                                                      
+                                                                                                        if(res.show_in=='1')
+                                                                                                        {
+                                                                                                            jQuery('.temp_selected').removeAttr('style');
+                                                                                                            jQuery('#savetemplate').attr('data-show_in',res.show_in);
+                                                                                                        }
+                                                                                                        else
+                                                                                                        {
+                                                                                                            jQuery('.temp_selected').css({'display':'none'});
+                                                                                                            jQuery('#savetemplate').attr('data-show_in',res.show_in);
+                                                                                                        }
                                                                                                         jQuery('#savetemplate').data('tree-id', tree_id);
                                                                                                         jQuery('#savetemplate').data('tempid', 0);
                                                                                                         jQuery('#savetemplate').data('timeline', node_data.timeline);
@@ -2227,6 +2239,17 @@ function patient_page_shortcode() {
 																				jQuery('.selected_temp_modal #temp_selected_URL').val(res.url);
 																				jQuery('#p_builder').attr('href',res.url+'?fl_builder');
 																				jQuery('.selected_temp_modal #temp_selected_title').val(res.title);
+
+                                                                                if(res.show_in=='1')
+                                                                                {
+                                                                                    jQuery('.temp_selected').removeAttr('style');
+                                                                                    jQuery('#savetemplate').attr('data-show_in',res.show_in);
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    jQuery('.temp_selected').css({'display':'none'});
+                                                                                    jQuery('#savetemplate').attr('data-show_in',res.show_in);
+                                                                                }
 																				jQuery('#edittemplatepost_ifr').contents().find("body").html('');
 																				jQuery('#edittemplatepost_ifr').contents().find("body").append(res.content);
 																			
@@ -2348,15 +2371,15 @@ function patient_page_shortcode() {
 															
 															jQuery("#email_link_myModal").modal();
 															jQuery('#mycustomeditor_afds').val(email_link);
-															
-															tinyMCE.get('mycustomeditor_afds').setContent("<?php echo addslashes(get_user_meta($current_user->ID,'int_msg',true)); ?><br>"+email_link+''+"<br><?php echo addslashes(get_user_meta($current_user->ID,'timeline_email',true)); ?>");
+															jQuery('#mycustomeditor_afds_ifr').contents().find('#tinymce').html("<?php echo addslashes(get_user_meta($current_user->ID,'int_msg',true)); ?><br>"+email_link+''+"<br><?php echo addslashes(get_user_meta($current_user->ID,'timeline_email',true)); ?>");
+															//tinyMCE.get('mycustomeditor_afds').setContent("<?php echo addslashes(get_user_meta($current_user->ID,'int_msg',true)); ?><br>"+email_link+''+"<br><?php echo addslashes(get_user_meta($current_user->ID,'timeline_email',true)); ?>");
 														});
 														jQuery('.for_email').click(function(e){
 																
 																	e.preventDefault();
 																	var mail_data = jQuery('.email_popup_form').serialize();
 																	
-																	var msg_body = tinyMCE.get('mycustomeditor_afds').getContent();
+																	var msg_body = jQuery('#mycustomeditor_afds_ifr').contents().find('#tinymce').html();
 																	msg_body = msg_body.trim();
 																	var tomail = jQuery('.to_email').val();
 																	var subject = jQuery('.subject').val();
@@ -2439,6 +2462,7 @@ function patient_page_shortcode() {
 																	//var node = data.node
 																	 var selNodes = data.tree.getSelectedNodes();
 																	email_link	= jQuery.map(selNodes, function(node){
+                                                                        console.log(encodeURI(node.data.url)+'<--->'+node.title);
 																			if(node.data.url!=undefined)
 																			{
 																			 return  '<a href="'+encodeURI(node.data.url)+'">'+node.title+'</a><br>' ;
@@ -3737,14 +3761,14 @@ function p_patient_page_shortcode() {
 															
 															jQuery("#email_link_myModal").modal();
 															
-															tinyMCE.get('mycustomeditor_afds').setContent("<?php echo addslashes(get_user_meta($current_user->ID,'int_msg',true)); ?><br>"+put_str.replace(",","")+''+"<br><?php echo addslashes(get_user_meta($current_user->ID,'timeline_email',true)); ?>");
-															
+															//tinyMCE.get('mycustomeditor_afds').setContent("<?php echo addslashes(get_user_meta($current_user->ID,'int_msg',true)); ?><br>"+put_str.replace(",","")+''+"<br><?php echo addslashes(get_user_meta($current_user->ID,'timeline_email',true)); ?>");
+															jQuery('#mycustomeditor_afds_ifr').contents().find('#tinymce').html("<?php echo addslashes(get_user_meta($current_user->ID,'int_msg',true)); ?><br>"+put_str.replace(",","")+''+"<br><?php echo addslashes(get_user_meta($current_user->ID,'timeline_email',true)); ?>");
 														});
 														jQuery('.for_email').click(function(e){
 																	e.preventDefault();
 																	//alert();
 																	var mail_data = jQuery('.email_popup_form').serialize();
-																	var msg_body = tinyMCE.get('mycustomeditor_afds').getContent();
+																	var msg_body = jQuery('#mycustomeditor_afds_ifr').contents().find('#tinymce').html();
 																	msg_body = msg_body.trim();
 																	var tomail = jQuery('.to_email').val();
 																	var subject = jQuery('.subject').val();
@@ -3837,13 +3861,15 @@ function p_patient_page_shortcode() {
 															jQuery("#email_link_myModal").modal();
 															
 															tinyMCE.get('mycustomeditor_afds').setContent(put_str.replace(",",""));
+                                                            jQuery('#mycustomeditor_afds_ifr').contents().find('#tinymce').html(put_str.replace(",","")+'');
+
 															
 														});
 														jQuery('.for_email').click(function(e){
 																	e.preventDefault();
 																	//alert();
 																	var mail_data = jQuery('.email_popup_form').serialize();
-																	var msg_body = tinyMCE.get('mycustomeditor_afds').getContent();
+																	var msg_body = jQuery('#mycustomeditor_afds_ifr').contents().find('#tinymce').html();
 																	msg_body = msg_body.trim();
 																	var tomail = jQuery('.to_email').val();
 																	var subject = jQuery('.subject').val();
@@ -4127,6 +4153,16 @@ function p_patient_page_shortcode() {
                                                                                                         jQuery('.selected_temp_modal #temp_selected_URL').val(res.url);
 																										jQuery('#p_builder').attr('href',res.url+'?fl_builder');
                                                                                                         jQuery('.selected_temp_modal #temp_selected_title').val(res.title);
+                                                                                                        if(res.show_in=='1')
+                                                                                                        {
+                                                                                                            jQuery('.temp_selected').removeAttr('style');
+                                                                                                            jQuery('#savetemplate').attr('data-show_in',res.show_in);
+                                                                                                        }
+                                                                                                        else
+                                                                                                        {
+                                                                                                            jQuery('.temp_selected').css({'display':'none'});
+                                                                                                            jQuery('#savetemplate').attr('data-show_in',res.show_in);
+                                                                                                        }
                                                                                                         jQuery('#edittemplatepost_ifr').contents().find("body").html('');
                                                                                                         jQuery('#edittemplatepost_ifr').contents().find("body").append(res.content);
                                                                                                       
@@ -4588,6 +4624,16 @@ function p_patient_page_shortcode() {
 																				//alert('link call');
 																				jQuery('.selected_temp_modal #temp_selected_URL').val(res.url);
 																				jQuery('.selected_temp_modal #temp_selected_title').val(res.title);
+                                                                                if(res.show_in=='1')
+                                                                                {
+                                                                                    jQuery('.temp_selected').removeAttr('style');
+                                                                                    jQuery('#savetemplate').attr('data-show_in',res.show_in);
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    jQuery('.temp_selected').css({'display':'none'});
+                                                                                    jQuery('#savetemplate').attr('data-show_in',res.show_in);
+                                                                                }
 																				jQuery('#edittemplatepost_ifr').contents().find("body").html('');
 																				jQuery('#edittemplatepost_ifr').contents().find("body").append(res.content);
 																				jQuery('#p_builder').attr('href',res.url+'?fl_builder');
@@ -5304,7 +5350,20 @@ function p_patient_page_shortcode() {
 																								var node = jQuery("#tree_" + tree_id).fancytree("getActiveNode");
 																								
 																								if (node) {
-
+                                                                                                        if(res1.show_in==1)
+                                                                                                        {
+                                                                                                            
+                                                                                                            jQuery('#savetemplate').attr('data-show_in',res1.show_in);
+                                                                                                            jQuery('.temp_selected').css({'display':'block'});
+                                                                                                        }
+                                                                                                        else
+                                                                                                        {
+                                                                                                            jQuery('.temp_selected').css({'display':'none'});
+                                                                                                            jQuery('#p_builder').click(function(){
+                                                                                                                jQuery('.selected_temp_modal').hide();
+                                                                                                             });
+                                                                                                            jQuery('#savetemplate').attr('data-show_in',res1.show_in);
+                                                                                                        }
 																										var htm = '<div class="timlin90"><div><span style="text-decoration: underline;">' + title_field + '</span></div><div><div class="overbox"></div>' + cnt + '</div></div>';
 																										//var htm = '<a href="' + res.url + '" target="_blank">' + title + '</a>';
 																										//var htm = '<span data-url="' + res.url + '" data-type="content" data-cid="' + res.id + '">' + title + '</span>';
@@ -5572,7 +5631,16 @@ function p_patient_page_shortcode() {
                                                                                                 jQuery('#edittemplatepost').val('')
                                                                                                 jQuery(".selected_temp_modal").hide('fade');
                                                                                                 jQuery('#temp_selected_title').val('');
-                                                                                                window.open(post_URL+"?fl_builder",'_blank');
+                                                                                                var btn_attr = jQuery('#savetemplate').attr('data-show_in');;
+                                                                                                if(btn_attr==0)
+                                                                                                {
+                                                                                                    window.open(post_URL+"?fl_builder",'_blank');
+                                                                                                    jQuery(".selected_temp_modal").hide('fade');
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    jQuery(".selected_temp_modal").hide('fade');
+                                                                                                }
 
                                                                                         }
                                                                                 }
@@ -5912,6 +5980,7 @@ function after_template_select() {
 		update_post_meta($post_id,"current_clicked_key",$_REQUEST["current_clicked_node"]);
 		update_post_meta($post_id,"current_sel_temp_thumb",get_post_meta($_REQUEST["sel_template"],'pt_thumbnails',true));
 		$insert_post['post_ID'] = $post_id;
+        update_post_meta($post_id,'selected_template_ID',$_REQUEST["sel_template"]);
         $insert_post['show_in'] = get_post_meta($_REQUEST["sel_template"],'show_in_timeline',true);
         echo json_encode($insert_post);      
 		exit;
@@ -6068,6 +6137,7 @@ function pm_content_edit() {
         $arr['parent'] = $post->post_parent;
         $arr['content'] = do_shortcode($post->post_content);
         $arr['metavalue'] = get_post_meta($post->ID,'my_meta_box_select',true);
+        $arr['show_in'] = get_post_meta(get_post_meta($post->ID,'selected_template_ID',true),'show_in_timeline',true);
         echo json_encode($arr);
 
         exit;
